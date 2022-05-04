@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace OzonHelper.Controllers;
 
 [ApiController]
-[Route("[controller]/ozon")]
+[Route("[controller]")]
 public class OzonController : ControllerBase
 {
     private readonly ILogger<OzonController> _logger;
@@ -26,7 +26,7 @@ public class OzonController : ControllerBase
 
     [HttpGet]
     [Route("Name")]
-    public async Task<IResult<IEnumerable<string>>> GetNameSuggestions([FromQuery] string query, CancellationToken token)
+    public async Task<IResult<IEnumerable<string>>> GetNameSuggestions([FromQuery] string? query, CancellationToken token)
     {
         _logger.LogDebug("{MethodName}({Query})", nameof(GetNameSuggestions), query);
         var result = new ApiResult<IEnumerable<string>>();
@@ -37,6 +37,7 @@ public class OzonController : ControllerBase
         }
         catch (Exception e)
         {
+            _logger.LogError(e, nameof(GetNameSuggestions));
             result.Success = false;
             result.Error = e.Message;
         }
@@ -44,6 +45,7 @@ public class OzonController : ControllerBase
         return result;
     }
     
+    [Obsolete]
     [HttpGet]
     [Route("CompareNameCategory")]
     public async Task<IResult<double>> CompareNameCategory([FromQuery] string name, [FromQuery] string category, CancellationToken token)
@@ -57,6 +59,7 @@ public class OzonController : ControllerBase
         }
         catch (Exception e)
         {
+            _logger.LogError(e, nameof(CompareNameCategory));
             result.Success = false;
             result.Error = e.Message;
         }
@@ -66,7 +69,7 @@ public class OzonController : ControllerBase
     
     [HttpGet]
     [Route("KeyWords")]
-    public async Task<IResult<IEnumerable<string>>> GetKeyWords([FromQuery] string name, [FromQuery] string category, CancellationToken token)
+    public async Task<IResult<IEnumerable<string>>> GetKeyWords([FromQuery] string? name, [FromQuery] string? category, CancellationToken token)
     {
         _logger.LogDebug("{MethodName}({Name}, {Category})", nameof(GetKeyWords), name, category);
         var result = new ApiResult<IEnumerable<string>>();
@@ -77,6 +80,7 @@ public class OzonController : ControllerBase
         }
         catch (Exception e)
         {
+            _logger.LogError(e, nameof(GetKeyWords));
             result.Success = false;
             result.Error = e.Message;
         }
@@ -86,7 +90,7 @@ public class OzonController : ControllerBase
     
     [HttpGet]
     [Route("Price")]
-    public async Task<IResult<IPriceInfo>> GetPriceInfo([FromQuery] string name, [FromQuery] string category, CancellationToken token)
+    public async Task<IResult<IPriceInfo>> GetPriceInfo([FromQuery] string name, [FromQuery] string? category, CancellationToken token)
     {
         _logger.LogDebug("{MethodName}({Name}, {Category})", nameof(GetPriceInfo), name, category);
         var result = new ApiResult<IPriceInfo>();
@@ -97,6 +101,7 @@ public class OzonController : ControllerBase
         }
         catch (Exception e)
         {
+            _logger.LogError(e, nameof(GetPriceInfo));
             result.Success = false;
             result.Error = e.Message;
         }

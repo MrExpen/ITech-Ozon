@@ -1,5 +1,6 @@
 using CoreLibrary.Services;
 using TestsLibrary.Services;
+using NamingHelper = SiteParserLibrary.Services.NamingHelper;
 
 var builder = WebApplication.CreateBuilder(args);
 
