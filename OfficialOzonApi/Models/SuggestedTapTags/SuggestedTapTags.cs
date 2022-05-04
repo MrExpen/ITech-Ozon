@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace SiteParserLibrary.Models.Api;
+namespace OfficialOzonApi.Models.SuggestedTapTags;
 
 public class SuggestedTapTags
 {
