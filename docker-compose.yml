@@ -10,5 +10,5 @@ services:
       dockerfile: OzonHelper/Dockerfile
     ports:
       - "580:80"
-    volumes:
-      - data-protection-keys-site:/root/.aspnet/DataProtection-Keys:rw
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
