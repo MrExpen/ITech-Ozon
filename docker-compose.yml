@@ -1,0 +1,14 @@
+version: '3.4'
+
+volumes:
+  data-protection-keys-site:
+
+services:
+  ozon:
+    build:
+      context: .
+      dockerfile: OzonHelper/Dockerfile
+    ports:
+      - "580:80"
+    volumes:
+      - data-protection-keys-site:/root/.aspnet/DataProtection-Keys:rw
