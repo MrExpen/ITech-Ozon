@@ -1,4 +1,3 @@
-using CoreLibrary.Data.Model;
 using Newtonsoft.Json;
 
 namespace OfficialOzonApi.Models.Stats;
@@ -58,20 +57,4 @@ public class SearchResult
     
     [JsonProperty("zrShare")]
     public double ZrShare{ get; set; }
-
-    public CoreLibrary.Data.Model.UserSearch ToDbUserSearch(DateTime from, DateTime to)
-    {
-        var result = new CoreLibrary.Data.Model.UserSearch
-        {
-            Query = Query,
-            AveragePrice = AveragePrice,
-            SearchCount = SearchCount,
-            AddedToCard = AddedToCardCount,
-            PredictedCategories =
-                PredictedCategorieIds.Select(x => new ProductСategory { Id = x }).ToList(),
-            From = from,
-            To = to
-        };
-        return result;
-    }
 }

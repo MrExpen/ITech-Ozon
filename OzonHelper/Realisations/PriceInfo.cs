@@ -1,6 +1,6 @@
-﻿using CoreLibrary.Services;
+﻿using OzonHelper.Services;
 
-namespace CoreLibrary.Realisations;
+namespace OzonHelper.Realisations;
 
 public class PriceInfo : IPriceInfo
 {

@@ -1,7 +1,6 @@
-﻿using CoreLibrary.Realisations;
-using CoreLibrary.Services;
+﻿using OzonHelper.Services;
 
-namespace TestsLibrary.Services;
+namespace OzonHelper.Realisations.Test;
 
 public class PriceHelper : IPriceHelper
 {

@@ -1,4 +1,4 @@
-﻿namespace CoreLibrary.Services;
+﻿namespace OzonHelper.Services;
 
 public interface IPriceHelper
 {

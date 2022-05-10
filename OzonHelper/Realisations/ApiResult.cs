@@ -1,6 +1,7 @@
-﻿using CoreLibrary.Services;
+﻿using OzonHelper.Services;
+using IResult = OzonHelper.Services.IResult;
 
-namespace CoreLibrary.Realisations;
+namespace OzonHelper.Realisations;
 
 public class ApiResult : IResult
 {

@@ -1,6 +1,5 @@
-﻿using CoreLibrary.Realisations;
-using CoreLibrary.Services;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using  OzonHelper.Services;
 
 namespace OzonHelper.Controllers;
 
@@ -29,7 +28,7 @@ public class OzonController : ControllerBase
     public async Task<IResult<IEnumerable<string>>> GetNameSuggestions([FromQuery] string? query, CancellationToken token)
     {
         _logger.LogDebug("{MethodName}({Query})", nameof(GetNameSuggestions), query);
-        var result = new ApiResult<IEnumerable<string>>();
+        var result = new Realisations.ApiResult<IEnumerable<string>>();
         
         try
         {
@@ -51,7 +50,7 @@ public class OzonController : ControllerBase
     public async Task<IResult<double>> CompareNameCategory([FromQuery] string name, [FromQuery] string category, CancellationToken token)
     {
         _logger.LogDebug("{MethodName}({Name}, {Category})", nameof(CompareNameCategory), name, category);
-        var result = new ApiResult<double>();
+        var result = new Realisations.ApiResult<double>();
         
         try
         {
@@ -72,7 +71,7 @@ public class OzonController : ControllerBase
     public async Task<IResult<IEnumerable<string>>> GetKeyWords([FromQuery] string? name, [FromQuery] string? category, CancellationToken token)
     {
         _logger.LogDebug("{MethodName}({Name}, {Category})", nameof(GetKeyWords), name, category);
-        var result = new ApiResult<IEnumerable<string>>();
+        var result = new Realisations.ApiResult<IEnumerable<string>>();
         
         try
         {
@@ -93,7 +92,7 @@ public class OzonController : ControllerBase
     public async Task<IResult<IPriceInfo>> GetPriceInfo([FromQuery] string name, [FromQuery] string? category, CancellationToken token)
     {
         _logger.LogDebug("{MethodName}({Name}, {Category})", nameof(GetPriceInfo), name, category);
-        var result = new ApiResult<IPriceInfo>();
+        var result = new Realisations.ApiResult<IPriceInfo>();
         
         try
         {

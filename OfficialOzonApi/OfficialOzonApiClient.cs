@@ -1,7 +1,6 @@
-﻿using Newtonsoft.Json;
-using OfficialOzonApi.Models.CategoriesTree;
+﻿using System.Net;
+using Newtonsoft.Json;
 using OfficialOzonApi.Models.Stats;
-using OfficialOzonApi.Models.SuggestedTapTags;
 using RestSharp;
 
 namespace OfficialOzonApi;
@@ -21,27 +20,30 @@ public class OfficialOzonApiClient
         _restClient.AddDefaultHeader("x-o3-company-id", companyId.ToString());
     }
 
-    public async Task<SuggestedTapTags> GetSuggestedTapTagsAsync(string name, CancellationToken token = default)
+    public async Task<Models.SuggestedTapTags.ApiResponse?> GetSuggestedTapTagsAsync(string name, CancellationToken token = default)
     {
         var request = new RestRequest("https://www.ozon.ru/api/composer-api.bx/_action/getSuggestedTapTags",
             Method.Post);
         request.AddJsonBody(new { text = name.ToLower() });
         var response = await _restClient.ExecuteAsync(request, token);
+        if (response.StatusCode == HttpStatusCode.OK) return null;
         var result = JsonConvert.DeserializeObject<Models.SuggestedTapTags.ApiResponse>(response.Content);
-        return result.SuggestedTapTags;
+        return result;
+
     }
 
-    public async Task<Dictionary<int, ModelNode>> GetCategoriesTreeAsync(string search = "",  CancellationToken token = default)
+    public async Task<Models.CategoriesTree.ApiResponse?> GetCategoriesTreeAsync(string search = "",  CancellationToken token = default)
     {
         var request = new RestRequest("https://seller.ozon.ru/api/site/category/navigation-category/get-tree",
             Method.Post);
         request.AddJsonBody(new { company_id = _companyId, search = search.ToLower(), commercial_category_ids = Enumerable.Empty<int>() });
         var response = await _restClient.ExecuteAsync(request, token);
+        if (response.StatusCode != HttpStatusCode.OK) return null;
         var result = JsonConvert.DeserializeObject<Models.CategoriesTree.ApiResponse>(response.Content);
-        return result.Result;
+        return result;
     }
 
-    public async Task<IEnumerable<SearchResult>> GetUserSearchResultsAsync(IEnumerable<int>? categories = null, DateTime? from = null,
+    public async Task<Models.Stats.ApiResponse?> GetUserSearchResultsAsync(IEnumerable<int>? categories = null, DateTime? from = null,
         DateTime? to = null, string text = "", int offset = 0, int limit = 50, SortingParams? sortingParams = null,
         CancellationToken token = default)
     {
@@ -67,7 +69,8 @@ public class OfficialOzonApiClient
             text = text.ToLower()
         }), "application/json");
         var response = await _restClient.ExecuteAsync(request, token);
+        if (response.StatusCode != HttpStatusCode.OK) return null;
         var result = JsonConvert.DeserializeObject<Models.Stats.ApiResponse>(response.Content);
-        return result.Data;
+        return result;
     }
 }
