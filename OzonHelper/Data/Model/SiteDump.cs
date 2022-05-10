@@ -8,7 +8,7 @@ public class SiteDump
     public DateTime Date { get; set; }
     public DumpWeeks DumpWeeks { get; set; }
     
-    public virtual ICollection<Search> Searches { get; set; } = new List<Search>();
+    public virtual List<Search> Searches { get; set; } = new List<Search>();
     
-    public virtual ICollection<Category> Categories { get; set; } = new List<Category>();
+    public virtual List<Category> Categories { get; set; } = new List<Category>();
 }

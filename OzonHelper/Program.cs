@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using OzonHelper.Data;
 using OzonHelper.Realisations.Test;
 using OzonHelper.Services;
 
@@ -16,7 +18,6 @@ builder.Services.AddScoped<IKeyWordHelper, KeyWordHelper>();
 builder.Services.AddScoped<INameCategoryComparer, NameCategoryComparer>();
 builder.Services.AddScoped<INamingHelper, NamingHelper>();
 builder.Services.AddScoped<IPriceHelper, PriceHelper>();
-
 
 var app = builder.Build();
 

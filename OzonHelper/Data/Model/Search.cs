@@ -10,5 +10,8 @@ public class Search
     public int AddedToCard { get; set; }
     public int AveragePrice { get; set; }
 
+    public Guid? DumpId { get; set; }
+    public virtual SiteDump Dump { get; set; }
+    
     public virtual ICollection<CategoryIdStorage> PredictedCategories { get; set; } = new List<CategoryIdStorage>();
 }
