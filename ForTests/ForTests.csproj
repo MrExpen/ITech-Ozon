@@ -11,4 +11,10 @@
       <ProjectReference Include="..\OfficialOzonApi\OfficialOzonApi.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.0-preview.3.22175.1" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="7.0.0-preview.3.22175.1" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.0-preview.3.22175.1" />
+    </ItemGroup>
+
 </Project>

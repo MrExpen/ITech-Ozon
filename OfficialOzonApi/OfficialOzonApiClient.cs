@@ -15,6 +15,8 @@ public class OfficialOzonApiClient
     {
         _restClient = new RestClient();
         _companyId = companyId;
+        _restClient.Options.UserAgent =
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.54 Safari/537.36";
         _restClient.AddDefaultHeader("accesstoken", accessToken);
         _restClient.AddDefaultHeader("x-o3-company-id", companyId.ToString());
     }
@@ -50,9 +52,9 @@ public class OfficialOzonApiClient
         from ??= to.Value.AddDays(-27);
         sortingParams ??= new SortingParams("count", "desc");
 
-        request.AddJsonBody(new
+        request.AddStringBody(JsonConvert.SerializeObject(new
         {
-            end_categories = categories,
+            end_categories = categories.Select(x => x.ToString()),
             from = from.Value.ToString("yyyy-MM-ddTHH:mm:ssZ"),
             to = to.Value.ToString("yyyy-MM-ddTHH:mm:ssZ"),
             limit,
@@ -63,24 +65,9 @@ public class OfficialOzonApiClient
                 order = sortingParams.Value.Order
             },
             text = text.ToLower()
-        });
+        }), "application/json");
         var response = await _restClient.ExecuteAsync(request, token);
         var result = JsonConvert.DeserializeObject<Models.Stats.ApiResponse>(response.Content);
         return result.Data;
-    }
-}
-
-public struct SortingParams
-{
-    [JsonProperty("attribute")]
-    public string Attribute { get; set; }
-    
-    [JsonProperty("order")]
-    public string Order { get; set; }
-
-    public SortingParams(string attribute, string order)
-    {
-        Attribute = attribute;
-        Order = order;
     }
 }

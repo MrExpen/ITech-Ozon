@@ -11,4 +11,8 @@
       <PackageReference Include="RestSharp" Version="107.3.1-alpha.0.24" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\CoreLibrary\CoreLibrary.csproj" />
+    </ItemGroup>
+
 </Project>
