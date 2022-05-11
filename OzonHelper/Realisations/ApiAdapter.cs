@@ -20,11 +20,11 @@ public class ApiAdapter : IApiAdapter
         return response?.SuggestedTapTags?.Items?.Select(x => x.CellTrackingInfo.SearchString + x.Title);
     }
 
-    public async Task<IEnumerable<Category>?> GetCategoryTreeAsync(string search = "", SiteDump? dump = null,
+    public async Task<IEnumerable<Category>?> GetCategoryTreeAsync(string search = "",
         CancellationToken token = default)
     {
         var response = await _apiClient.GetCategoriesTreeAsync(search, token);
-        return response?.Result?.Select(pair => pair.Value.ConvertToCategory(dump: dump)).ToList();
+        return response?.Result?.Select(pair => pair.Value.ConvertToCategory()).ToList();
     }
 
     public async Task<IEnumerable<Search>?> GetUserSearchesAsync(DumpWeeks weeks = DumpWeeks.One, string text = "", int offset = 0, int limit = 50,
@@ -47,26 +47,23 @@ public class ApiAdapter : IApiAdapter
         int? total = null;
         int i = 0;
 
-        var result = new SiteDump
-        {
-            Date = to.AddDays(1),
-            DumpWeeks = weeks
-        };
-        
         while (!total.HasValue || results.Count < total)
         {
             var response = await _apiClient.GetUserSearchResultsAsync(from: from, to: to, limit: limit,
                 offset: i++ * limit, token: token);
             total ??= response?.Total;
             if (response is null) break;
-            results.AddRange(response.Data.Select(x => x.ConvertToSearch(result)));
+            results.AddRange(response.Data.Select(x => x.ConvertToSearch()));
         }
 
-        var categories = await GetCategoryTreeAsync(dump: result, token: token) ?? Enumerable.Empty<Category>();
+        var categories = await GetCategoryTreeAsync(token: token) ?? Enumerable.Empty<Category>();
 
-        result.Searches = results;
-        result.Categories = categories.ToList();
-        
-        return result;
+        return new SiteDump
+        {
+            Date = to.AddDays(1),
+            DumpWeeks = weeks,
+            Searches = results,
+            Categories = categories.ToList()
+        };
     }
 }

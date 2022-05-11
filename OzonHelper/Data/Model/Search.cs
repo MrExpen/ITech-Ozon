@@ -5,7 +5,7 @@ namespace OzonHelper.Data.Model;
 
 public class Search
 {
-    [Key] public Guid Id { get; set; } = Guid.NewGuid();
+    [Key] public Guid Id { get; set; }
     public string? Query { get; set; }
     public int SearchCount { get; set; }
     public int AddedToCard { get; set; }

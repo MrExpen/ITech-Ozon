@@ -1,11 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OzonHelper.Data.Model;
 
 public class SiteDump
 {
-    [Key] public Guid Id { get; set; } = Guid.NewGuid();
+    [Key] public Guid Id { get; set; }
     public DateTime Date { get; set; }
     public DumpWeeks DumpWeeks { get; set; }
     
