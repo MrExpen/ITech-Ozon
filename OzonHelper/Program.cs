@@ -21,8 +21,6 @@ builder.Services.AddScoped<IPriceHelper, PriceHelper>();
 
 var app = builder.Build();
 
-
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

@@ -20,10 +20,11 @@ public class ApiAdapter : IApiAdapter
         return response?.SuggestedTapTags?.Items?.Select(x => x.CellTrackingInfo.SearchString + x.Title);
     }
 
-    public async Task<IEnumerable<Category>?> GetCategoryTreeAsync(string search = "", CancellationToken token = default)
+    public async Task<IEnumerable<Category>?> GetCategoryTreeAsync(string search = "", SiteDump? dump = null,
+        CancellationToken token = default)
     {
         var response = await _apiClient.GetCategoriesTreeAsync(search, token);
-        return response?.Result?.Select(pair => pair.Value.ConvertToCategory()).ToList();
+        return response?.Result?.Select(pair => pair.Value.ConvertToCategory(dump: dump)).ToList();
     }
 
     public async Task<IEnumerable<Search>?> GetUserSearchesAsync(DumpWeeks weeks = DumpWeeks.One, string text = "", int offset = 0, int limit = 50,
@@ -45,23 +46,27 @@ public class ApiAdapter : IApiAdapter
         var results = new List<Search>();
         int? total = null;
         int i = 0;
+
+        var result = new SiteDump
+        {
+            Date = to.AddDays(1),
+            DumpWeeks = weeks
+        };
+        
         while (!total.HasValue || results.Count < total)
         {
             var response = await _apiClient.GetUserSearchResultsAsync(from: from, to: to, limit: limit,
                 offset: i++ * limit, token: token);
             total ??= response?.Total;
             if (response is null) break;
-            results.AddRange(response.Data.Select(x => x.ConvertToSearch()));
+            results.AddRange(response.Data.Select(x => x.ConvertToSearch(result)));
         }
 
-        var categories = await GetCategoryTreeAsync(token: token) ?? Enumerable.Empty<Category>();
+        var categories = await GetCategoryTreeAsync(dump: result, token: token) ?? Enumerable.Empty<Category>();
+
+        result.Searches = results;
+        result.Categories = categories.ToList();
         
-        return new SiteDump
-        {
-            Searches = results,
-            Date = to.AddDays(1),
-            DumpWeeks = weeks,
-            Categories = categories.ToList()
-        };
+        return result;
     }
 }

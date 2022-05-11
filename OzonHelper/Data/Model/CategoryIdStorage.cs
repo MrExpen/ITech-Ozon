@@ -4,7 +4,7 @@ namespace OzonHelper.Data.Model;
 
 public class CategoryIdStorage
 {
-    [Key] public Guid Id { get; set; }
+    [Key] public Guid Id { get; set; } = Guid.NewGuid();
     public int CategoryId { get; set; }
     public Guid SearchId { get; set; }
     public CategoryIdStorage() { }
