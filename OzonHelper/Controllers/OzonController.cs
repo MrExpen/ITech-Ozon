@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OzonHelper.Data;
+using OzonHelper.Data.Model;
 using OzonHelper.Realisations;
 using  OzonHelper.Services;
 using OzonHelper.Utils;
@@ -107,10 +108,10 @@ public class OzonController : ControllerBase
     
     [HttpGet]
     [Route("Dumps")]
-    public async Task<IResult<IDumpsInfoResult>> GetDumpsInfo([FromQuery] int categoryId, CancellationToken token)
+    public async Task<IResult<DumpResponse>> GetDumpsInfo([FromQuery] int categoryId, CancellationToken token)
     {
         _logger.LogDebug("{MethodName}({CategoryId})", nameof(GetDumpsInfo), categoryId);
-        var result = new ApiResult<IDumpsInfoResult>();
+        var result = new ApiResult<DumpResponse>();
 
         try
         {
@@ -118,7 +119,7 @@ public class OzonController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogError(e, nameof(GetPriceInfo));
+            _logger.LogError(e, nameof(GetDumpsInfo));
             result.Success = false;
             result.Error = e.Message;
         }

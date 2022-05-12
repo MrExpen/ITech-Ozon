@@ -1,6 +1,8 @@
-﻿namespace OzonHelper.Services;
+﻿using OzonHelper.Data.Model;
+
+namespace OzonHelper.Services;
 
 public interface IDumpsHelper
 {
-    Task<IDumpsInfoResult> GetDumps(int categoryId, CancellationToken token = default);
+    Task<DumpResponse> GetDumps(int categoryId, CancellationToken token = default);
 }
