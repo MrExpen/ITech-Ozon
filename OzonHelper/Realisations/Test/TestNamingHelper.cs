@@ -2,7 +2,7 @@
 
 namespace OzonHelper.Realisations.Test;
 
-public class NamingHelper : INamingHelper
+public class TestNamingHelper : INamingHelper
 {
     public IEnumerable<string> GetSuggestions(string name)
         => new[]

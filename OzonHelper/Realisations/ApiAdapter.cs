@@ -56,14 +56,11 @@ public class ApiAdapter : IApiAdapter
             results.AddRange(response.Data.Select(x => x.ConvertToSearch()));
         }
 
-        var categories = await GetCategoryTreeAsync(token: token) ?? Enumerable.Empty<Category>();
-
         return new SiteDump
         {
             Date = to.AddDays(1),
             DumpWeeks = weeks,
-            Searches = results,
-            Categories = categories.ToList()
+            Searches = results
         };
     }
 }

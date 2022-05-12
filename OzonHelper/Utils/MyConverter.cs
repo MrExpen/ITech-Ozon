@@ -22,7 +22,7 @@ public static class MyConverter
         {
             Id = modelNode.Id,
             Name = modelNode.Name,
-            ParentId = parent?.DbId,
+            ParentId = parent?.Id,
             Parent = parent
         };
         result.Children = new List<Category>(modelNode.Nodes.Select(x => x.Value.ConvertToCategory(result)));

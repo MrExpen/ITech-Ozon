@@ -2,8 +2,8 @@
 
 public interface IPriceInfo
 {
-    decimal AveragePrice { get; }
-    decimal LowestPrice { get; }
-    decimal HighestPrice { get; }
-    decimal MedianPrice { get; }
+    DateTime Date { get; set; }
+    string Query { get; set; }
+    int AveragePrice { get; set; }
 }
+

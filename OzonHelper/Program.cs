@@ -1,5 +1,8 @@
+using System.Net.Mime;
 using Microsoft.EntityFrameworkCore;
+using OfficialOzonApi;
 using OzonHelper.Data;
+using OzonHelper.Realisations;
 using OzonHelper.Realisations.Test;
 using OzonHelper.Services;
 
@@ -13,11 +16,22 @@ builder.Services.AddControllers().AddNewtonsoftJson();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddSingleton(new OfficialOzonApiClient(
+    "",
+    0
+));
 
-builder.Services.AddScoped<IKeyWordHelper, KeyWordHelper>();
-builder.Services.AddScoped<INameCategoryComparer, NameCategoryComparer>();
-builder.Services.AddScoped<INamingHelper, NamingHelper>();
-builder.Services.AddScoped<IPriceHelper, PriceHelper>();
+builder.Services.AddSingleton<IApiAdapter, ApiAdapter>();
+
+
+
+builder.Services.AddDbContext<ApplicationDbContext>(optionsBuilder
+    => optionsBuilder.UseSqlite("Data Source=data.db").UseLazyLoadingProxies());
+
+builder.Services.AddScoped<IKeyWordHelper, TestKeyWordHelper>();
+builder.Services.AddScoped<IDumpsHelper, DumpHelper>();
+builder.Services.AddScoped<INamingHelper, DbNamingHelper>();
+builder.Services.AddScoped<IPriceHelper<PriceInfo>, DbPriceHelper>();
 
 var app = builder.Build();
 

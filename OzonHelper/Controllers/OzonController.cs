@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using OzonHelper.Data;
+using OzonHelper.Realisations;
 using  OzonHelper.Services;
 
 namespace OzonHelper.Controllers;
@@ -9,18 +12,20 @@ public class OzonController : ControllerBase
 {
     private readonly ILogger<OzonController> _logger;
     private readonly INamingHelper _namingHelper;
-    private readonly INameCategoryComparer _nameCategoryComparer;
-    private readonly IPriceHelper _priceHelper;
+    private readonly IDumpsHelper _dumpsHelper;
+    private readonly IPriceHelper<PriceInfo> _priceHelper;
     private readonly IKeyWordHelper _keyWordHelper;
+    private readonly ApplicationDbContext _db;
 
 
-    public OzonController(ILogger<OzonController> logger, INamingHelper namingHelper, INameCategoryComparer nameCategoryComparer, IPriceHelper priceHelper, IKeyWordHelper keyWordHelper)
+    public OzonController(ILogger<OzonController> logger, INamingHelper namingHelper, IPriceHelper<PriceInfo> priceHelper, IKeyWordHelper keyWordHelper, ApplicationDbContext db, IDumpsHelper dumpsHelper)
     {
         _logger = logger;
         _namingHelper = namingHelper;
-        _nameCategoryComparer = nameCategoryComparer;
         _priceHelper = priceHelper;
         _keyWordHelper = keyWordHelper;
+        _db = db;
+        _dumpsHelper = dumpsHelper;
     }
 
     [HttpGet]
@@ -43,29 +48,8 @@ public class OzonController : ControllerBase
 
         return result;
     }
-    
-    [Obsolete]
-    [HttpGet]
-    [Route("CompareNameCategory")]
-    public async Task<IResult<double>> CompareNameCategory([FromQuery] string name, [FromQuery] string category, CancellationToken token)
-    {
-        _logger.LogDebug("{MethodName}({Name}, {Category})", nameof(CompareNameCategory), name, category);
-        var result = new Realisations.ApiResult<double>();
-        
-        try
-        {
-            result.Result = await _nameCategoryComparer.GetSuggestionsAsync(name, category, token);
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, nameof(CompareNameCategory));
-            result.Success = false;
-            result.Error = e.Message;
-        }
 
-        return result;
-    }
-    
+    [Obsolete]
     [HttpGet]
     [Route("KeyWords")]
     public async Task<IResult<IEnumerable<string>>> GetKeyWords([FromQuery] string? name, [FromQuery] string? category, CancellationToken token)
@@ -89,14 +73,45 @@ public class OzonController : ControllerBase
     
     [HttpGet]
     [Route("Price")]
-    public async Task<IResult<IPriceInfo>> GetPriceInfo([FromQuery] string name, [FromQuery] string? category, CancellationToken token)
+    public async Task<IResult<IEnumerable<PriceInfo>>> GetPriceInfo([FromQuery] int? categoryId, [FromQuery] string? categoryName, CancellationToken token)
     {
-        _logger.LogDebug("{MethodName}({Name}, {Category})", nameof(GetPriceInfo), name, category);
-        var result = new Realisations.ApiResult<IPriceInfo>();
-        
+        _logger.LogDebug("{MethodName}({CategoryId}, {CategoryName})", nameof(GetPriceInfo), categoryId, categoryName);
+        var result = new ApiResult<IEnumerable<PriceInfo>>();
+
         try
         {
-            result.Result = await _priceHelper.GetPriceAsync(name, category, token);
+            IEnumerable<PriceInfo> r;
+            if (categoryId.HasValue)
+            {
+                r = await _priceHelper.GetPriceAsync(categoryId.Value, token);
+            }
+            else
+            {
+                r = await _priceHelper.GetPriceAsync(categoryName, token);
+            }
+
+            result.Result = r;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, nameof(GetPriceInfo));
+            result.Success = false;
+            result.Error = e.Message;
+        }
+
+        return result;
+    }
+    
+    [HttpGet]
+    [Route("Dumps")]
+    public async Task<IResult<IDumpsInfoResult>> GetDumpsInfo([FromQuery] int categoryId, CancellationToken token)
+    {
+        _logger.LogDebug("{MethodName}({CategoryId})", nameof(GetDumpsInfo), categoryId);
+        var result = new ApiResult<IDumpsInfoResult>();
+
+        try
+        {
+            result.Result = await _dumpsHelper.GetDumps(categoryId, token);
         }
         catch (Exception e)
         {

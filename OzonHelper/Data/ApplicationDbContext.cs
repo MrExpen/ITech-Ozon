@@ -9,12 +9,14 @@ public class ApplicationDbContext : DbContext
     public DbSet<SiteDump> SiteDumps { get; set; }
     public DbSet<Category> Categories { get; set; }
     public DbSet<Search> Searches { get; set; }
+    public DbSet<CategoryIdStorage> CategoryIdStorage { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Category>()
-            .HasOne(x => x.Parent)
-            .WithMany(x => x.Children);
+            .HasMany(x => x.Children)
+            .WithOne(x => x.Parent)
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Search>()
             .HasMany(x => x.PredictedCategories)
@@ -22,11 +24,6 @@ public class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<SiteDump>()
             .HasMany(x => x.Searches)
-            .WithOne(x => x.Dump)
-            .OnDelete(DeleteBehavior.Cascade);
-        
-        modelBuilder.Entity<SiteDump>()
-            .HasMany(x => x.Categories)
             .WithOne(x => x.Dump)
             .OnDelete(DeleteBehavior.Cascade);
     }

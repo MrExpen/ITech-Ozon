@@ -1,7 +1,8 @@
 ﻿namespace OzonHelper.Services;
 
-public interface IPriceHelper
+public interface IPriceHelper<TPriceInfo> where TPriceInfo : IPriceInfo, new()
 {
-    IPriceInfo GetPrice(string name, string category);
-    Task<IPriceInfo> GetPriceAsync(string name, string category, CancellationToken token = default);
+    Task<IEnumerable<TPriceInfo>> GetPriceAsync(string category, CancellationToken token = default);
+    Task<IEnumerable<TPriceInfo>> GetPriceAsync(int categoryId, CancellationToken token = default);
+    
 }

@@ -2,7 +2,7 @@
 
 namespace OzonHelper.Realisations.Test;
 
-public class KeyWordHelper : IKeyWordHelper
+public class TestKeyWordHelper : IKeyWordHelper
 {
     public IEnumerable<string> GetKeyWords(string name, string category)
         => new[]
