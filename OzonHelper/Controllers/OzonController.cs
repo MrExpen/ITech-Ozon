@@ -126,6 +126,27 @@ public class OzonController : ControllerBase
 
         return result;
     }
+    
+    [HttpGet]
+    [Route("DumpsByName")]
+    public async Task<IResult<IEnumerable<DumpInfo>>> GetDumpsInfoByName([FromQuery] string query, CancellationToken token)
+    {
+        _logger.LogDebug("{MethodName}({Query})", nameof(GetDumpsInfo), query);
+        var result = new ApiResult<IEnumerable<DumpInfo>>();
+
+        try
+        {
+            result.Result = await _dumpsHelper.GetDumps(query, token);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, nameof(GetDumpsInfo));
+            result.Success = false;
+            result.Error = e.Message;
+        }
+
+        return result;
+    }
 
     [HttpGet]
     [Route("DumpDate_TEST")]

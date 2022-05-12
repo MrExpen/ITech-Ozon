@@ -1,4 +1,5 @@
-﻿using OzonHelper.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using OzonHelper.Data;
 using OzonHelper.Data.Model;
 using OzonHelper.Services;
 
@@ -22,15 +23,39 @@ public class DumpHelper : IDumpsHelper
             .AsEnumerable().Select(x => _db.Searches.Find(x.SearchId));
         foreach (var search in searches.GroupBy(x => x.DumpId))
         {
-            result.Items.Add(new DumpInfo{Date = search.FirstOrDefault().Dump.Date, Items = search.Select(x=> new SearchResponse
+            result.Items.Add(new DumpInfo
             {
-                Query = x.Query,
-                AveragePrice = x.AveragePrice,
-                SearchCount = x.SearchCount,
-                AddedToCard = x.AddedToCard
-            })});
+                Date = search.FirstOrDefault().Dump.Date, Items = search.Select(x => new SearchResponse
+                {
+                    Query = x.Query,
+                    AveragePrice = x.AveragePrice,
+                    SearchCount = x.SearchCount,
+                    AddedToCard = x.AddedToCard
+                })
+            });
         }
+        return result;
+    }
 
+    public async Task<IEnumerable<DumpInfo>> GetDumps(string query, CancellationToken token = default)
+    {
+        var result = new List<DumpInfo>();
+
+        var searches = _db.Searches.AsEnumerable().Where(x => x.Query.ToLowerInvariant().Contains(query.ToLowerInvariant())).ToList();
+        
+        foreach (var search in searches.GroupBy(x => x.DumpId))
+        {
+            result.Add(new DumpInfo
+            {
+                Date = search.FirstOrDefault().Dump.Date, Items = search.Select(x => new SearchResponse
+                {
+                    Query = x.Query,
+                    AveragePrice = x.AveragePrice,
+                    SearchCount = x.SearchCount,
+                    AddedToCard = x.AddedToCard
+                })
+            });
+        }
         return result;
     }
 }

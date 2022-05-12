@@ -14,11 +14,11 @@ public class DbNamingHelper : INamingHelper
     }
 
     public IEnumerable<string> GetSuggestions(string name)
-        => GetSuggestionsAsync(name).GetAwaiter().GetResult();
+    {
+        return _db.Searches.AsEnumerable().Where(x => x.Query.ToLowerInvariant().Contains(name.ToLowerInvariant())).Select(x => x.Query).Distinct()
+            .ToArray();
+    }
 
     public async Task<IEnumerable<string>> GetSuggestionsAsync(string name, CancellationToken token = default)
-    {
-        return await _db.Searches.Where(x => x.Query.StartsWith(name)).Select(x => x.Query).Distinct()
-            .ToArrayAsync(token);
-    }
+        => GetSuggestions(name);
 }
