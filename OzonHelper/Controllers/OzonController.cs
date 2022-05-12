@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using OzonHelper.Data;
 using OzonHelper.Realisations;
 using  OzonHelper.Services;
+using OzonHelper.Utils;
 
 namespace OzonHelper.Controllers;
 
@@ -10,6 +11,7 @@ namespace OzonHelper.Controllers;
 [Route("[controller]")]
 public class OzonController : ControllerBase
 {
+    private readonly IApiAdapter _apiAdapter;
     private readonly ILogger<OzonController> _logger;
     private readonly INamingHelper _namingHelper;
     private readonly IDumpsHelper _dumpsHelper;
@@ -18,7 +20,7 @@ public class OzonController : ControllerBase
     private readonly ApplicationDbContext _db;
 
 
-    public OzonController(ILogger<OzonController> logger, INamingHelper namingHelper, IPriceHelper<PriceInfo> priceHelper, IKeyWordHelper keyWordHelper, ApplicationDbContext db, IDumpsHelper dumpsHelper)
+    public OzonController(ILogger<OzonController> logger, INamingHelper namingHelper, IPriceHelper<PriceInfo> priceHelper, IKeyWordHelper keyWordHelper, ApplicationDbContext db, IDumpsHelper dumpsHelper, IApiAdapter apiAdapter)
     {
         _logger = logger;
         _namingHelper = namingHelper;
@@ -26,6 +28,7 @@ public class OzonController : ControllerBase
         _keyWordHelper = keyWordHelper;
         _db = db;
         _dumpsHelper = dumpsHelper;
+        _apiAdapter = apiAdapter;
     }
 
     [HttpGet]
@@ -121,5 +124,24 @@ public class OzonController : ControllerBase
         }
 
         return result;
+    }
+
+    [HttpGet]
+    [Route("DumpDate_TEST")]
+    public async Task<IActionResult> Dump()
+    {
+        await _db.Database.EnsureCreatedAsync();
+        
+        var dump = await _apiAdapter.DumpDataAsync();
+        var categories = (await _apiAdapter.GetCategoryTreeAsync()).ToArray();
+
+        await _db.Categories.ClearAsync();
+        await _db.Categories.AddRangeAsync(categories);
+        await _db.SaveChangesAsync();
+
+        await _db.SiteDumps.AddAsync(dump!);
+        await _db.SaveChangesAsync();
+        
+        return Ok();
     }
 }

@@ -17,8 +17,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton(new OfficialOzonApiClient(
-    "",
-    0
+    Environment.GetEnvironmentVariable("OZON_TOKEN"),
+    int.Parse(Environment.GetEnvironmentVariable("OZON_COMPANY_ID"))
 ));
 
 builder.Services.AddSingleton<IApiAdapter, ApiAdapter>();
