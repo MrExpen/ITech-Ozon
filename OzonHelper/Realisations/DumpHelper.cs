@@ -45,8 +45,9 @@ public class DumpHelper : IDumpsHelper
     {
         var result = new List<DumpInfo>();
 
-        var searches = _db.Searches.AsEnumerable().Where(x => x.Query.ToLowerInvariant().Contains(query.ToLowerInvariant())).ToList();
-        
+        var searches = _db.Searches.AsEnumerable()
+            .Where(x => x.Query.ToLowerInvariant().Contains(query.ToLowerInvariant())).ToList();
+
         foreach (var search in searches.GroupBy(x => x.DumpId))
         {
             result.Add(new DumpInfo
@@ -60,33 +61,31 @@ public class DumpHelper : IDumpsHelper
                 })
             });
         }
+
         return result;
     }
-    
-    private async Task<IEnumerable<DumpResponse>> _GetDumps(List<Category> categories, CancellationToken token = default)
+
+    private async Task<IEnumerable<DumpResponse>> _GetDumps(List<Category> categories,
+        CancellationToken token = default)
     {
         var list = new List<DumpResponse>();
         foreach (var category in categories)
         {
-            var dumpResponse = await _GetDumps(category, token);
-            if (dumpResponse is not null)
-            {
-                list.Add(dumpResponse);
-            }
+            list.AddRange(await _GetDumps(category, token));
         }
 
         return list;
     }
 
-    private async Task<DumpResponse?> _GetDumps(Category? category, CancellationToken token = default)
+    private async Task<IEnumerable<DumpResponse>> _GetDumps(Category? category, CancellationToken token = default)
     {
         if (category is null)
         {
-            return null;
+            return Enumerable.Empty<DumpResponse>();
         }
-        
+
         var result = new DumpResponse { Category = new CategoryResponse { Id = category.Id, Name = category.Name } };
-        
+
         var searches = _db.CategoryIdStorage.Where(x => x.CategoryId == category.Id)
             .AsEnumerable().Select(x => _db.Searches.Find(x.SearchId));
         foreach (var search in searches.GroupBy(x => x.DumpId))
@@ -103,11 +102,7 @@ public class DumpHelper : IDumpsHelper
             });
         }
 
-        if (result.Items.Count == 0)
-        {
-            return await _GetDumps(category.Parent, token);
-        }
+        return (await _GetDumps(category.Parent, token)).Append(result);
 
-        return result;
     }
 }
