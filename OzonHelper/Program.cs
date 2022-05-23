@@ -33,7 +33,7 @@ builder.Services.AddSingleton<IApiAdapter, ApiAdapter>();
 
 
 builder.Services.AddDbContext<ApplicationDbContext>(optionsBuilder
-    => optionsBuilder.UseSqlite("Data Source=data.db").UseLazyLoadingProxies());
+    => optionsBuilder.UseSqlite("Data Source=/data/data.db").UseLazyLoadingProxies());
 
 
 builder.Services.AddScoped<IKeyWordHelper, TestKeyWordHelper>();
