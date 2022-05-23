@@ -30,21 +30,34 @@ public class DbPriceHelper : IPriceHelper<PriceInfo>
     {
         var list = new List<PriceInfo>();
         var tmp = new List<Guid>();
+
         foreach (var category in categories)
         {
-            tmp.AddRange(_db.CategoryIdStorage.Where(x => x.CategoryId == category.Id).Select(x => x.SearchId));
+            list.AddRange(await _GetPriceAsync(category, token));
         }
-        foreach (var guid in tmp)
+        
+        return list.OrderBy(x => x.Date);
+    }
+
+    private async Task<IEnumerable<PriceInfo>> _GetPriceAsync(Category? category, CancellationToken token = default)
+    {
+        if (category is null)
         {
-            var search = await _db.Searches.FindAsync(guid);
+            return Enumerable.Empty<PriceInfo>();
+        }
+        var list = new List<PriceInfo>();
+        foreach (var searchId in _db.CategoryIdStorage.Where(x => x.CategoryId == category.Id).Select(x => x.SearchId))
+        {
+            var search = await _db.Searches.FindAsync(searchId);
             list.Add(new PriceInfo
                 { Date = search.Dump.Date, Query = search.Query, AveragePrice = search.AveragePrice });
         }
 
         if (list.Count == 0)
         {
-            return await _GetPriceAsync(categories.Select(x => x.Parent).ToList(), token);
+            return await _GetPriceAsync(category.Parent, token);
         }
-        return list.OrderBy(x => x.Date);
+
+        return list;
     }
 }
