@@ -52,28 +52,6 @@ public class OzonController : ControllerBase
 
         return result;
     }
-
-    [Obsolete]
-    [HttpGet]
-    [Route("KeyWords")]
-    public async Task<IResult<IEnumerable<string>>> GetKeyWords([FromQuery] string? name, [FromQuery] string? category, CancellationToken token)
-    {
-        _logger.LogDebug("{MethodName}({Name}, {Category})", nameof(GetKeyWords), name, category);
-        var result = new Realisations.ApiResult<IEnumerable<string>>();
-        
-        try
-        {
-            result.Result = await _keyWordHelper.GetKeyWordsAsync(name, category, token);
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, nameof(GetKeyWords));
-            result.Success = false;
-            result.Error = e.Message;
-        }
-
-        return result;
-    }
     
     [HttpGet]
     [Route("Price")]
@@ -148,6 +126,7 @@ public class OzonController : ControllerBase
         return result;
     }
 
+    [Obsolete]
     [HttpGet]
     [Route("DumpDate_TEST")]
     public async Task<IActionResult> Dump()

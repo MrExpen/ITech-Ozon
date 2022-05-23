@@ -16,9 +16,12 @@ builder.Services.AddControllers().AddNewtonsoftJson();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddCors(options => 
-     options.AddDefaultPolicy(corsPolicyBuilder => corsPolicyBuilder 
-         .AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
+builder.Services.AddCors(options => options.AddDefaultPolicy(corsPolicyBuilder =>
+    corsPolicyBuilder
+        .AllowAnyOrigin()
+        .AllowAnyHeader()
+        .AllowAnyMethod())
+);
 
 builder.Services.AddSingleton(new OfficialOzonApiClient(
     Environment.GetEnvironmentVariable("OZON_TOKEN") ?? "",
