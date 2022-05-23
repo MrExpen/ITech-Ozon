@@ -53,11 +53,6 @@ public class DbPriceHelper : IPriceHelper<PriceInfo>
                 { Date = search.Dump.Date, Query = search.Query, AveragePrice = search.AveragePrice });
         }
 
-        if (list.Count == 0)
-        {
-            return await _GetPriceAsync(category.Parent, token);
-        }
-
-        return list;
+        return (await _GetPriceAsync(category.Parent, token)).Concat(list);
     }
 }
