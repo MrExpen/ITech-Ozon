@@ -1,0 +1,18 @@
+version: '3.4'
+
+volumes:
+  db:
+
+services:
+  ozon:
+    build:
+      context: .
+      dockerfile: OzonHelper/Dockerfile
+    ports:
+      - "580:80"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      OZON_TOKEN: ""
+      OZON_COMPANY_ID: ""
+    volumes:
+      - db:/mnt
