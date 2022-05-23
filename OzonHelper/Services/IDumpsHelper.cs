@@ -4,6 +4,6 @@ namespace OzonHelper.Services;
 
 public interface IDumpsHelper
 {
-    Task<DumpResponse> GetDumps(int categoryId, CancellationToken token = default);
-    Task<IEnumerable<DumpInfo>> GetDumps(string query, CancellationToken token = default);
+    Task<IEnumerable<DumpResponse>> GetDumps(string category, CancellationToken token = default);
+    Task<IEnumerable<DumpInfo>> GetDumpsByQuery(string query, CancellationToken token = default);
 }
