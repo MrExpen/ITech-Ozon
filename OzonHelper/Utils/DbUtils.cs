@@ -24,7 +24,7 @@ public static class DbUtils
 
     private static int _CompareString(string pattern, string findIn)
     {
-        return FuzzySharp.Fuzz.PartialRatio(pattern.ToLower(), findIn.ToLower());
+        return FuzzySharp.Fuzz.Ratio(pattern.ToLower(), findIn.ToLower());
         return pattern.ToLower() == findIn.ToLower() ? 100 : 0;
     }
 }
