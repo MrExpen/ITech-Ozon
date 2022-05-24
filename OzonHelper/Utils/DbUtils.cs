@@ -17,7 +17,7 @@ public static class DbUtils
     {
         return db.Categories.AsEnumerable().Where(x => _CompareString(pattern, x.Name) > minComp)
             .DistinctBy(x => x.Id)
-            .OrderBy(x => _CompareString(pattern, x.Name))
+            .OrderByDescending(x => _CompareString(pattern, x.Name))
             .Take(take)
             .ToList();
     }
