@@ -86,10 +86,10 @@ public class OzonController : ControllerBase
     
     [HttpGet]
     [Route("Dumps")]
-    public async Task<IResult<IEnumerable<DumpResponse>>> GetDumpsInfo([FromQuery] string category, CancellationToken token)
+    public async Task<IResult<IEnumerable<DumpCategoryResponse>>> GetDumpsInfo([FromQuery] string category, CancellationToken token)
     {
         _logger.LogDebug("{MethodName}({Category})", nameof(GetDumpsInfo), category);
-        var result = new ApiResult<IEnumerable<DumpResponse>>();
+        var result = new ApiResult<IEnumerable<DumpCategoryResponse>>();
 
         try
         {

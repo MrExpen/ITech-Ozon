@@ -16,10 +16,30 @@ public class DumpHelper : IDumpsHelper
         _db = db;
     }
 
-    public async Task<IEnumerable<DumpResponse>> GetDumps(string categoryName, CancellationToken token = default)
+    public async Task<IEnumerable<DumpCategoryResponse>> GetDumps(string categoryName, CancellationToken token = default)
     {
         var categories = _db.GetCategoriesByName(categoryName);
-        return (await _GetDumps(categories, token)).Where(x => x.Items.Count != 0);
+        var searchesIds = _db.GetSearchesIdsInCategories(categories);
+        IEnumerable<Search> searches = searchesIds.Select(x => _db.Searches.Find(x)).Where(x => x is not null)!;
+
+        var result = new List<DumpCategoryResponse>(); 
+
+        foreach (var group in searches.GroupBy(x => x.Query))
+        {
+            result.Add(new DumpCategoryResponse
+            {
+                Query = group.Key,
+                Data = group.Select(x => new DumpGraphicPoint
+                {
+                    Date = x.Dump.Date,
+                    AveragePrice = x.AveragePrice,
+                    SearchCount = x.SearchCount,
+                    AddedToCard = x.AddedToCard
+                })
+            });
+        }
+
+        return result;
     }
 
     public async Task<IEnumerable<DumpInfo>> GetDumpsByQuery(string query, CancellationToken token = default)
