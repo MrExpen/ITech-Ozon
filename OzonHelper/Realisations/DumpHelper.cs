@@ -18,7 +18,7 @@ public class DumpHelper : IDumpsHelper
 
     public async Task<IEnumerable<DumpCategoryResponse>> GetDumps(string categoryName, CancellationToken token = default)
     {
-        var categories = _db.GetCategoriesByName(categoryName);
+        var categories = _db.GetAllCategoriesToRootByName(categoryName);
         var searchesIds = _db.GetSearchesIdsInCategories(categories);
         IEnumerable<Search> searches = searchesIds.Select(x => _db.Searches.Find(x)).Where(x => x is not null)!;
 

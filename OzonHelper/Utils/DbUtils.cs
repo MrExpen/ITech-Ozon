@@ -19,6 +19,22 @@ public static class DbUtils
             .DistinctBy(x => x.Id).ToList();
     }
 
+    public static IEnumerable<Category> GetCategoriesToRoot(Category? category)
+    {
+        if (category is null)
+        {
+            return Enumerable.Empty<Category>();
+        }
+
+        return GetCategoriesToRoot(category.Parent).Append(category);
+    }
+
+    public static IEnumerable<Category> GetAllCategoriesToRootByName(this ApplicationDbContext db, string pattern,
+        int minComp = 75)
+    {
+        return GetCategoriesByName(db, pattern, minComp).SelectMany(GetCategoriesToRoot).DistinctBy(x => x.Id);
+    }
+
     public static IEnumerable<Guid> GetSearchesIdsInCategories(this ApplicationDbContext db, IEnumerable<Category> categories)
     {
         var result = new HashSet<Guid>();
@@ -33,7 +49,7 @@ public static class DbUtils
             return Enumerable.Empty<Guid>();
         }
 
-        return GetSearchesInCategory(db, category.Parent).Concat(db.CategoryIdStorage.Select(x => x.SearchId));
+        return db.CategoryIdStorage.Select(x => x.SearchId);
     }
     
     private static int _CompareString(string patter, string findIn)
