@@ -13,7 +13,7 @@ public static class DbUtils
     public static async Task ClearAsync<T>(this DbSet<T> dbSet) where T : class
         => dbSet.RemoveRange(await dbSet.ToArrayAsync());
 
-    public static List<Category> GetCategoriesByName(this ApplicationDbContext db, string pattern, int minComp = 90, int take = 5)
+    public static List<Category> GetCategoriesByName(this ApplicationDbContext db, string pattern, int minComp = 80, int take = 5)
     {
         return db.Categories.AsEnumerable().Where(x => _CompareString(pattern, x.Name) > minComp)
             .DistinctBy(x => x.Id)
