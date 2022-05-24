@@ -13,7 +13,7 @@ public static class DbUtils
     public static async Task ClearAsync<T>(this DbSet<T> dbSet) where T : class
         => dbSet.RemoveRange(await dbSet.ToArrayAsync());
 
-    public static List<Category> GetCategoriesByName(this ApplicationDbContext db, string pattern, int minComp = 80, int take = 5)
+    public static List<Category> GetCategoriesByName(this ApplicationDbContext db, string pattern, int minComp = 95, int take = 5)
     {
         return db.Categories.AsEnumerable().Where(x => _CompareString(pattern, x.Name) > minComp)
             .DistinctBy(x => x.Id)
@@ -24,7 +24,7 @@ public static class DbUtils
 
     private static int _CompareString(string pattern, string findIn)
     {
-        return FuzzySharp.Fuzz.PartialTokenAbbreviationRatio(pattern.ToLower(), findIn.ToLower());
+        return FuzzySharp.Fuzz.PartialRatio(pattern.ToLower(), findIn.ToLower());
         return pattern.ToLower() == findIn.ToLower() ? 100 : 0;
     }
 }
