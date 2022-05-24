@@ -145,4 +145,11 @@ public class OzonController : ControllerBase
         
         return Ok();
     }
+
+    [HttpGet]
+    [Route("Categories_TEST")]
+    public async Task<IEnumerable<string?>> Test([FromQuery] string query, CancellationToken token)
+    {
+        return _db.GetCategoriesByName(query).Select(x => x.Name);
+    }
 }
