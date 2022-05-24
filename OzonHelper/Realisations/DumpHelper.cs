@@ -25,7 +25,7 @@ public class DumpHelper : IDumpsHelper
             result.Add(new DumpCategoryResponse
             {
                 Query = searchResponse.Key,
-                Data = searchResponse.Select(x => new DumpGraphicPoint
+                Data = searchResponse.DistinctBy(x => x.Date).Select(x => new DumpGraphicPoint
                 {
                     Date = x.Date,
                     AveragePrice = x.AveragePrice,
