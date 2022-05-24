@@ -19,8 +19,9 @@ public static class DbUtils
             .DistinctBy(x => x.Id).ToList();
     }
 
-    private static int _CompareString(string patter, string findIn)
+    private static int _CompareString(string pattern, string findIn)
     {
-        return patter.ToLower() == findIn.ToLower() ? 100 : 0;
+        return FuzzySharp.Fuzz.PartialTokenSetRatio(pattern.ToLower(), findIn.ToLower());
+        return pattern.ToLower() == findIn.ToLower() ? 100 : 0;
     }
 }
