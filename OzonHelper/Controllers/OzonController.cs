@@ -72,7 +72,7 @@ public class OzonController : ControllerBase
                 r = await _priceHelper.GetPriceAsync(categoryName, token);
             }
 
-            result.Result = r.GroupBy(x => x.Query);
+            result.Result = r.DistinctBy(x => x.Date.ToShortDateString() + x.Query).GroupBy(x => x.Query);
         }
         catch (Exception e)
         {
