@@ -14,6 +14,7 @@ public class DumpInfo
 
 public class SearchResponse
 {
+    public DateTime? Date { get; set; }
     public string? Query { get; set; }
     public int SearchCount { get; set; }
     public int AddedToCard { get; set; }

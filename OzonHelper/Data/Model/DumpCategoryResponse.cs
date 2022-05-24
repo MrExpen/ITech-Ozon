@@ -8,7 +8,7 @@ public class DumpCategoryResponse
 
 public class DumpGraphicPoint
 {
-    public DateTime Date { get; set; }
+    public DateTime? Date { get; set; }
     public int SearchCount { get; set; }
     public int AddedToCard { get; set; }
     public int AveragePrice { get; set; }

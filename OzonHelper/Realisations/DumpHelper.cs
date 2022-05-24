@@ -18,27 +18,24 @@ public class DumpHelper : IDumpsHelper
 
     public async Task<IEnumerable<DumpCategoryResponse>> GetDumps(string categoryName, CancellationToken token = default)
     {
-        var categories = _db.GetAllCategoriesToRootByName(categoryName);
-        var searchesIds = _db.GetSearchesIdsInCategories(categories);
-        IEnumerable<Search> searches = searchesIds.Select(x => _db.Searches.Find(x)).Where(x => x is not null)!;
-
-        var result = new List<DumpCategoryResponse>(); 
-
-        foreach (var group in searches.GroupBy(x => x.Query))
+        var categories = _db.GetCategoriesByName(categoryName);
+        var result = new List<DumpCategoryResponse>();
+        foreach (var searchResponse in (await _GetDumps(categories, token)).GroupBy(x => x.Query))
         {
             result.Add(new DumpCategoryResponse
             {
-                Query = group.Key,
-                Data = group.Select(x => new DumpGraphicPoint
+                Query = searchResponse.Key,
+                Data = searchResponse.Select(x => new DumpGraphicPoint
                 {
-                    Date = x.Dump.Date,
+                    Date = x.Date,
                     AveragePrice = x.AveragePrice,
                     SearchCount = x.SearchCount,
                     AddedToCard = x.AddedToCard
                 })
             });
         }
-
+        
+        
         return result;
     }
 
@@ -66,10 +63,11 @@ public class DumpHelper : IDumpsHelper
         return result;
     }
 
-    private async Task<IEnumerable<DumpResponse>> _GetDumps(List<Category> categories,
+    private async Task<IEnumerable<SearchResponse>> _GetDumps(List<Category> categories,
         CancellationToken token = default)
     {
-        var list = new List<DumpResponse>();
+        var list = new List<SearchResponse>();
+
         foreach (var category in categories)
         {
             list.AddRange(await _GetDumps(category, token));
@@ -78,32 +76,26 @@ public class DumpHelper : IDumpsHelper
         return list;
     }
 
-    private async Task<IEnumerable<DumpResponse>> _GetDumps(Category? category, CancellationToken token = default)
+    private async Task<IEnumerable<SearchResponse>> _GetDumps(Category? category, CancellationToken token = default)
     {
         if (category is null)
         {
-            return Enumerable.Empty<DumpResponse>();
+            return Enumerable.Empty<SearchResponse>();
         }
-
-        var result = new DumpResponse { Category = new CategoryResponse { Id = category.Id, Name = category.Name } };
-
-        var searches = _db.CategoryIdStorage.Where(x => x.CategoryId == category.Id)
-            .AsEnumerable().Select(x => _db.Searches.Find(x.SearchId));
-        foreach (var search in searches.GroupBy(x => x.DumpId))
+        var list = new List<SearchResponse>();
+        foreach (var searchId in _db.CategoryIdStorage.Where(x => x.CategoryId == category.Id).Select(x => x.SearchId))
         {
-            result.Items.Add(new DumpInfo
+            var search = await _db.Searches.FindAsync(searchId);
+            list.Add(new SearchResponse
             {
-                Date = search.FirstOrDefault().Dump.Date, Items = search.Select(x => new SearchResponse
-                {
-                    Query = x.Query,
-                    AveragePrice = x.AveragePrice,
-                    SearchCount = x.SearchCount,
-                    AddedToCard = x.AddedToCard
-                })
+                Date = search.Dump.Date,
+                Query = search.Query,
+                AveragePrice = search.AveragePrice,
+                SearchCount = search.SearchCount,
+                AddedToCard = search.AddedToCard
             });
         }
 
-        return (await _GetDumps(category.Parent, token)).Append(result);
-
+        return (await _GetDumps(category.Parent, token)).Concat(list);
     }
 }
