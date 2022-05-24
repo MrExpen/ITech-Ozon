@@ -55,10 +55,10 @@ public class OzonController : ControllerBase
     
     [HttpGet]
     [Route("Price")]
-    public async Task<IResult<IEnumerable<PriceInfo>>> GetPriceInfo([FromQuery] int? categoryId, [FromQuery] string? categoryName, CancellationToken token)
+    public async Task<IResult<IEnumerable<IEnumerable<PriceInfo>>>> GetPriceInfo([FromQuery] int? categoryId, [FromQuery] string? categoryName, CancellationToken token)
     {
         _logger.LogDebug("{MethodName}({CategoryId}, {CategoryName})", nameof(GetPriceInfo), categoryId, categoryName);
-        var result = new ApiResult<IEnumerable<PriceInfo>>();
+        var result = new ApiResult<IEnumerable<IEnumerable<PriceInfo>>>();
 
         try
         {
@@ -72,7 +72,7 @@ public class OzonController : ControllerBase
                 r = await _priceHelper.GetPriceAsync(categoryName, token);
             }
 
-            result.Result = r;
+            result.Result = r.GroupBy(x => x.Query);
         }
         catch (Exception e)
         {
