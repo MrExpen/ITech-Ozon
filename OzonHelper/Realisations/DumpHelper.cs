@@ -3,6 +3,7 @@ using OzonHelper.Data;
 using OzonHelper.Data.Model;
 using OzonHelper.Services;
 using System.Linq;
+using OzonHelper.Utils;
 
 namespace OzonHelper.Realisations;
 
@@ -17,7 +18,7 @@ public class DumpHelper : IDumpsHelper
 
     public async Task<IEnumerable<DumpResponse>> GetDumps(string categoryName, CancellationToken token = default)
     {
-        var categories = await _db.Categories.Where(x => x.Name == categoryName).ToListAsync(token);
+        var categories = _db.GetCategoriesByName(categoryName);
         return (await _GetDumps(categories, token)).Where(x => x.Items.Count != 0);
     }
 

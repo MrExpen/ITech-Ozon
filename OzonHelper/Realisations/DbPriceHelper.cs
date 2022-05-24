@@ -2,6 +2,7 @@
 using OzonHelper.Data;
 using OzonHelper.Data.Model;
 using OzonHelper.Services;
+using OzonHelper.Utils;
 
 namespace OzonHelper.Realisations;
 
@@ -16,7 +17,7 @@ public class DbPriceHelper : IPriceHelper<PriceInfo>
 
     public async Task<IEnumerable<PriceInfo>> GetPriceAsync(string category, CancellationToken token = default)
     {
-        var categories = await _db.Categories.Where(x => x.Name == category).ToListAsync(token);
+        var categories = _db.GetCategoriesByName(category);
         return await _GetPriceAsync(categories, token);
     }
 

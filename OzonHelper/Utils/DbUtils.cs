@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using OzonHelper.Data;
+using OzonHelper.Data.Model;
 
 namespace OzonHelper.Utils;
 
@@ -10,4 +12,15 @@ public static class DbUtils
     
     public static async Task ClearAsync<T>(this DbSet<T> dbSet) where T : class
         => dbSet.RemoveRange(await dbSet.ToArrayAsync());
+
+    public static List<Category> GetCategoriesByName(this ApplicationDbContext db, string pattern, int minComp = 75)
+    {
+        return db.Categories.AsEnumerable().Where(x => _CompareString(pattern, x.Name) > minComp)
+            .DistinctBy(x => x.Id).ToList();
+    }
+
+    private static int _CompareString(string patter, string findIn)
+    {
+        return patter.ToLower() == findIn.ToLower() ? 100 : 0;
+    }
 }
